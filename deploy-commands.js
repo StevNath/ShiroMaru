@@ -1,3 +1,4 @@
+// UNTUK NAMBAHIN COMMAND BARU
 const { REST, Routes } = require('discord.js');
 const { clientId, guildId, token } = require('./config.json');
 const fs = require('node:fs');
