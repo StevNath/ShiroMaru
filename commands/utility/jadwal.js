@@ -19,21 +19,27 @@ module.exports = {
     const cachePath = path.join(__dirname, '..', '..', 'cache', `${kelas}.html`);
 
     let html = null;
-    let tumbal = '2IA01';
-    let kls =[{tumbal},{kelas}]
     // Coba ambil dari cache dulu
     if (fs.existsSync(cachePath)) {
       console.log(`🔍 Mengambil jadwal dari cache untuk: ${kelas}`);
       html = fs.readFileSync(cachePath, 'utf8');
     } else {
       // Tidak ada cache, ambil dari web pakai cloudscraper
-      const url = `https://baak.gunadarma.ac.id/jadwal/cariJadKul?kelas=${encodeURIComponent(kelas)}`;
+      const url = `https://baak.gunadarma.ac.id/jadwal/cariJadKul?teks=${encodeURIComponent(kelas)}`;
       const jar = cloudscraper.jar();
+      try { // Mancing agar cloudflare bisa jalan
+        html = await cloudscraper.get({
+          uri: url,
+          jar: jar,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+          },
+        });
+      } catch (error) {
+        html = null;
+      }
 
       try {
-        console.log('🌐 Warm-up ke situs BAAK…');
-        await cloudscraper.get({ uri: 'https://baak.gunadarma.ac.id/', jar });
-
         console.log(`🔄 Fetch jadwal langsung untuk: ${kelas}`);
         html = await cloudscraper.get({
           uri: url,
@@ -47,13 +53,18 @@ module.exports = {
             'Cache-Control': 'max-age=0',
           },
         });
+        await interaction.editReply(`🔄 Mengambil jadwal untuk: \`${kelas}\`...`);
 
-        if (!html.includes('<table')) {
-          await interaction.editReply(`❌ Tidak ditemukan jadwal untuk: \`${kelas}\``);
-          return;
-        }
 
-        fs.writeFileSync(cachePath, html);
+        const $ = cheerio.load(html);
+              const jadwalTable = $('.stacktable.large-only');
+        
+              if (jadwalTable.length > 0) {
+                fs.writeFileSync(path.join(__dirname,'..','..', 'cache', `${kelas}.html`), jadwalTable.html());
+                console.log(`✅ Saved ${kelas}.html`);
+              } else {
+                console.log(`❌ No jadwal table found for ${kelas}`);
+              }
         console.log(`✅ Jadwal ${kelas} disimpan ke cache.`);
       } catch (error) {
         console.error('❌ Error saat fetch:', error.message);
