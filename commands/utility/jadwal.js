@@ -19,7 +19,8 @@ module.exports = {
     const cachePath = path.join(__dirname, '..', '..', 'cache', `${kelas}.html`);
 
     let html = null;
-
+    let tumbal = '2IA01';
+    let kls =[{tumbal},{kelas}]
     // Coba ambil dari cache dulu
     if (fs.existsSync(cachePath)) {
       console.log(`🔍 Mengambil jadwal dari cache untuk: ${kelas}`);
