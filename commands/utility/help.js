@@ -13,7 +13,12 @@ module.exports = {
                 { name: '/hello', value: 'Replies with Hello!' },
                 { name: '/info', value: 'All Information about the user' },
                 { name: '/membercount', value: 'Shows total number of members' },
-                { name: '/help', value: 'List All Commands' }
+                { name: '/adventure', value: 'RPG Adventure' },
+                { name: 'jadwal', value: 'Jadwal kelas' },
+                { name: '/alert', value: 'Alert' },
+                { name: '/help', value: 'List All Commands' },
+
+
             )
 		await interaction.reply({ embeds: [embed] });
 	},
