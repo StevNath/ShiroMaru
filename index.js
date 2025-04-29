@@ -3,7 +3,19 @@ const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits, MessageFlags } = require('discord.js');
 const { token } = require('./config.json');
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+// Menambahkan intent yang dibutuhkan
+const client = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,                 // Untuk event terkait guild (server)
+		GatewayIntentBits.GuildMessages,          // Untuk mendengarkan pesan di server
+		GatewayIntentBits.MessageContent,         // Untuk membaca isi pesan (required for message-based commands)
+		GatewayIntentBits.GuildMembers,           // Untuk membaca event anggota (misal saat ada user join/leave)
+		GatewayIntentBits.GuildPresences,         // Untuk mendapatkan informasi presensi anggota (status online, dsb.)
+		GatewayIntentBits.GuildVoiceStates,       // Untuk membaca status suara anggota (join, leave, dll.)
+		GatewayIntentBits.DirectMessages,         // Untuk event terkait pesan pribadi
+		GatewayIntentBits.MessageContent,         // Intent untuk bisa mengakses isi pesan yang masuk
+	]
+});
 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
