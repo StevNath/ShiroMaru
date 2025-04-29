@@ -14,6 +14,10 @@ module.exports = {
         .setRequired(true)),
   async execute(interaction) {
     const kelas = interaction.options.getString('kelas');
+    if (kelas.length < 5){
+      await interaction.reply('🔍 Nama kelas atau dosen terlalu pendek. Minimal 5 karakter.');
+      return;
+    }
     await interaction.deferReply();
 
     const cachePath = path.join(__dirname, '..', '..', 'cache', `${kelas}.html`);
