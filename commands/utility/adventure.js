@@ -21,7 +21,8 @@ module.exports = {
 			{ text: 'Kamu bertemu monster ganas! 😈', action: 'fight' },
 			{ text: 'Kamu menemukan peti harta karun! 🎁', action: 'treasure' },
 			{ text: 'Kamu menginjak jebakan berduri! ⚔️', action: 'trap' },
-			{ text: 'Kamu bertemu penyihir baik hati! 🧙‍♂️', action: 'wizard' }
+			{ text: 'Kamu bertemu penyihir baik hati! 🧙‍♂️', action: 'wizard' },
+			{ text: 'Kamu Sampai Di Shop', action: 'shop'}
 		];
 
 		const event = events[Math.floor(Math.random() * events.length)];
@@ -179,6 +180,16 @@ module.exports = {
 			stats.hp += heal;
 			eventResult = `🧙‍♂️ **Penyihir menyembuhkanmu!** Kamu mendapatkan **${heal} HP**.`;
 			color = 0x00FFFF;
+		} else if (event.action === 'shop'){
+			addDamage = Math.floor(Math.random() * 10) + 5;
+			purchase = Math.floor(Math.random() * 100) + 50;
+			if (stats.gold >= purchase) {
+				stats.damage += addDamage;
+				stats.gold -= purchase;
+				eventResult = `🛒 **Kamu membeli item!** Damage kamu bertambah **${addDamage}** dan menghabiskan **${purchase} gold**.`;
+			} else {
+				eventResult = `🛒 **Kamu tidak punya cukup gold!** Gold kamu tidak cukup untuk membeli item ini.`;
+			}
 		}
 
 		const embed = new EmbedBuilder()
