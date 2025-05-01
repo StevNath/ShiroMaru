@@ -142,7 +142,7 @@ module.exports = {
 						new EmbedBuilder()
 							.setColor(0xFF0000)
 							.setTitle('😈 Monster Menyerang!')
-							.setDescription(`Serangan gagal! Monster masih hidup Dengan **HP ${Math.max(monsterHp, 0)}** .\n\n🗡️ Ketik huruf berikut untuk menyerang: **\`${targetKey}\`**`)
+							.setDescription(`Serangan Berhasil! Monster masih hidup Dengan **HP ${Math.max(monsterHp, 0)}** .\n\n🗡️ Ketik huruf berikut untuk menyerang: **\`${targetKey}\`**`)
 							.addFields(
 								{ name: 'Kamu', value: `❤️ HP: **${stats.hp}** | 🗡️ Damage: **${stats.damage}**`, inline: false }
 							)
@@ -182,7 +182,7 @@ module.exports = {
 			color = 0x00FFFF;
 		} else if (event.action === 'shop'){
 			addDamage = Math.floor(Math.random() * 10) + 5;
-			purchase = Math.floor(Math.random() * 100) + 50;
+			purchase = addDamage * 7;
 			if (stats.gold >= purchase) {
 				stats.damage += addDamage;
 				stats.gold -= purchase;
