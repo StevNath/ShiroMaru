@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const cheerio = require('cheerio');
@@ -11,65 +11,50 @@ module.exports = {
     .addStringOption(option =>
       option.setName('kelas')
         .setDescription('Nama kelas atau dosen')
-        .setRequired(true)),
+        .setRequired(true)
+    ),
+
   async execute(interaction) {
     const kelas = interaction.options.getString('kelas');
-    if (kelas.length < 5){
+
+    if (kelas.length < 5) {
       await interaction.reply('🔍 Nama kelas atau dosen terlalu pendek. Minimal 5 karakter.');
       return;
     }
+
     await interaction.deferReply();
 
     const cachePath = path.join(__dirname, '..', '..', 'cache', `uts_${kelas}.html`);
-
     let html = null;
-    // Coba ambil dari cache dulu
+
+    // Ambil dari cache jika ada
     if (fs.existsSync(cachePath)) {
       console.log(`🔍 Mengambil jadwal dari cache untuk: ${kelas}`);
       html = fs.readFileSync(cachePath, 'utf8');
     } else {
-      // Tidak ada cache, ambil dari web pakai cloudscraper
       const url = `https://baak.gunadarma.ac.id/jadwal/cariUts?teks=${encodeURIComponent(kelas)}`;
       const jar = cloudscraper.jar();
-      try { // Mancing agar cloudflare bisa jalan
-        html = await cloudscraper.get({
-          uri: url,
-          jar: jar,
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-          },
-        });
-      } catch (error) {
-        html = null;
-      }
 
       try {
-        console.log(`🔄 Fetch jadwal langsung untuk: ${kelas}`);
         html = await cloudscraper.get({
           uri: url,
           jar,
           headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:117.0) Gecko/20100101 Firefox/117.0',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Connection': 'keep-alive',
-            'Referer': 'https://baak.gunadarma.ac.id/',
-            'Cache-Control': 'max-age=0',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
           },
         });
-        await interaction.editReply(`🔄 Mengambil jadwal untuk: \`${kelas}\`...`);
-
 
         const $ = cheerio.load(html);
-              const jadwalTable = $('.stacktable.large-only');
-        
-              if (jadwalTable.length > 0) {
-                fs.writeFileSync(path.join(__dirname,'..','..', 'cache', `uts_${kelas}.html`), jadwalTable.html());
-                console.log(`✅ Saved uts_${kelas}.html`);
-              } else {
-                console.log(`❌ No jadwal table found for ${kelas}`);
-              }
-        console.log(`✅ Jadwal Uts untuk ${kelas} disimpan ke cache.`);
+        const jadwalTable = $('.stacktable.large-only');
+
+        if (jadwalTable.length > 0) {
+          fs.writeFileSync(cachePath, jadwalTable.html());
+          console.log(`✅ Saved uts_${kelas}.html`);
+        } else {
+          console.log(`❌ No jadwal table found for ${kelas}`);
+        }
+
+        console.log(`✅ Jadwal UTS untuk ${kelas} disimpan ke cache.`);
       } catch (error) {
         console.error('❌ Error saat fetch:', error.message);
         await interaction.editReply('🚨 Gagal mengambil jadwal dari server. Mungkin kena proteksi Cloudflare.');
@@ -77,7 +62,7 @@ module.exports = {
       }
     }
 
-    // Parsing HTML jadwal (baik dari cache atau fetch baru)
+    // Parsing HTML
     const wrappedHtml = `<table><tbody>${html}</tbody></table>`;
     const $ = cheerio.load(wrappedHtml);
     const rows = $('tbody tr').slice(1); // skip header
@@ -87,23 +72,32 @@ module.exports = {
       return;
     }
 
-    let jadwalList = `📅 Jadwal ditemukan untuk: \`${kelas}\`\n\n`;
-    jadwalList += '```markdown\n';
-    jadwalList += 'Hari   | Mata Kuliah                  | Waktu   |         Ruang           |\n';
-    jadwalList += '-------|------------------------------|---------|-------------------------|\n';
+    // Buat Embed
+    const embed = new EmbedBuilder()
+      .setColor(0x3498db)
+      .setTitle(`📅 Jadwal UTS: ${kelas.toUpperCase()}`)
+      .setDescription('Berikut adalah daftar jadwal yang ditemukan:')
+      .setFooter({ text: 'Sumber: baak.gunadarma.ac.id' })
+      .setTimestamp();
 
+    // Tambah field per jadwal
     rows.each((i, row) => {
       const cols = $(row).find('td');
-      if (cols.length === 5) {
-        const hari = $(cols[0]).text().trim().padEnd(7, ' ');
-        const matkul = $(cols[2]).text().trim().slice(0, 30).padEnd(30, ' ');
-        const waktu = $(cols[3]).text().trim().padEnd(7, ' ');
-        const ruang = $(cols[4]).text().trim().padEnd(5, ' ');
-        jadwalList += `${hari}| ${matkul}| ${waktu}| ${ruang}| -\n`;
-        }
+      if (cols.length >= 5) {
+        const hari = $(cols[0]).text().trim();
+        const tanggal = $(cols[1]).text().trim();
+        const matkul = $(cols[2]).text().trim();
+        const waktu = $(cols[3]).text().trim();
+        const ruang = $(cols[4]).text().trim();
+
+        embed.addFields({
+          name: `${hari}, ${tanggal}`,
+          value: `📘 **${matkul}**\n🕒 ${waktu} | 🏫 ${ruang}`,
+          inline: false
+        });
+      }
     });
 
-    jadwalList += '```';
-    await interaction.editReply(jadwalList);
+    await interaction.editReply({ embeds: [embed] });
   },
 };
