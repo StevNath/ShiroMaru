@@ -47,5 +47,12 @@ for (const file of eventFiles) {
 		client.on(event.name, (...args) => event.execute(...args, client));
 	}
 }
+client.once('ready', () => {
+	console.log(`✅ Bot login sebagai ${client.user.tag}`);
+
+	// Mulai cron job timeChecker
+	const { startTimeChecker } = require('./events/timeChecker');
+	startTimeChecker(client);
+});
 
 client.login(token);
