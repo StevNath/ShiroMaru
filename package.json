@@ -1,0 +1,31 @@
+{
+  "name": "shiromaru",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StevNath/ShiroMaru.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/StevNath/ShiroMaru/issues"
+  },
+  "homepage": "https://github.com/StevNath/ShiroMaru#readme",
+  "keywords": [],
+  "description": "",
+  "dependencies": {
+    "better-sqlite3": "^11.9.1",
+    "canvas": "^3.1.0",
+    "cheerio": "^1.0.0",
+    "cloudscraper": "^4.6.0",
+    "dayjs": "^1.11.13",
+    "discord.js": "^14.18.0",
+    "ical.js": "^2.2.1",
+    "node-cron": "^4.2.1",
+    "sqlite3": "^5.1.7"
+  }
+}
