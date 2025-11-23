@@ -30,3 +30,5 @@ async function readIcal(url) {
 
     return Object.values(merged);
 }
+
+module.exports = { readIcal };
