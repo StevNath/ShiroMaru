@@ -1,4 +1,4 @@
-export function formatDate(date) {
+function formatDate(date) {
     return new Intl.DateTimeFormat("id-ID", {
         weekday: "long",
         day: "numeric",
@@ -8,3 +8,5 @@ export function formatDate(date) {
         minute: "2-digit"
     }).format(date);
 }
+
+module.exports = { formatDate };
