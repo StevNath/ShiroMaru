@@ -1,4 +1,4 @@
-import ICAL from "ical.js";
+const ICAL = require("ical.js");
 
 export async function readIcal(url) {
     const text = await (await fetch(url)).text();
