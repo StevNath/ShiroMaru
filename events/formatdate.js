@@ -5,8 +5,8 @@ function formatDate(date) {
         month: "long",
         year: "numeric",
         hour: "2-digit",
-        minute: "2-digit"
+        minute: "2-digit",
+        timeZone: "Asia/Jakarta"  // <-- paksa WIB
     }).format(date);
 }
-
 module.exports = { formatDate };
