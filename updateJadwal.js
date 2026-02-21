@@ -7,7 +7,7 @@ const cheerio = require('cheerio');
   // Buat shared cookie jar
   const jar = cloudscraper.jar();
 
-  for (const kelas of ['2IA18', '2IA19', '2IA20', '2IA21', '2IA22', '2IA23', '2IA24']) {
+  for (const kelas of ['2IA18']) {
     try {
       console.log(`🔄 Fetch ${kelas} via Cloudscraper…`);
       const html = await cloudscraper.get({
@@ -17,6 +17,10 @@ const cheerio = require('cheerio');
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
         },
       });
+
+      console.log('=== DEBUG HTML ===');
+      console.log(html.slice(0, 500));
+      console.log('==================');
 
       // Parse HTML dan ambil tabel jadwal
       const $ = cheerio.load(html);
