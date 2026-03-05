@@ -6,7 +6,7 @@ const https = require('https');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('uploadjadwal')
-		.setDescription('Uploads the schedule file to the server')
+		.setDescription('Uploads the schedule file to the server (copy only OuterHtml) ')
         .addAttachmentOption(option =>
             option.setName('file')
                 .setDescription('The schedule file to upload')
