@@ -30,7 +30,7 @@ module.exports = {
         }
 
         const filePath = path.join(cacheDir, attachment.name);
-        const file = fs.createWriteStream(filepath);
+        const file = fs.createWriteStream(filePath);
 
         https.get(attachment.url, (response) => {
             response.pipe(file);
