@@ -36,7 +36,7 @@ module.exports = {
             response.pipe(file);
             file.on('finish', () => {
                 file.close();
-                interaction.reply({ content: 'File uploaded successfully!', ephemeral: true });
+                interaction.reply({ content: 'File uploaded successfully!' });
             });
         }).on('error', (err) => {
             fs.unlink(filePath, () => {});
