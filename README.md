@@ -46,17 +46,6 @@ Once the bot is running, invite it to your Discord server and use the available 
 - **discord.js** - Discord API library
 - **JavaScript** - Programming language
 
-## Contributing
-
-Feel free to fork this project and submit pull requests for any improvements.
-
-## License
-
-This project is open source and available under the MIT License.
-
-## Support
-
-For issues or questions, please open an issue on the GitHub repository.
 
 ---
 
